@@ -346,7 +346,10 @@ function refreshDerived(): void {
   const sourceUrl = document.querySelector<HTMLInputElement>('#trail-sourceUrl');
   const sourceUrlError = document.querySelector<HTMLElement>('#trail-sourceUrl-error');
   const invalidSourceUrl = Boolean(trail.sourceUrl.trim()) && !isAuditableSourceUrl(trail.sourceUrl);
-  if (sourceUrl) sourceUrl.toggleAttribute('aria-invalid', invalidSourceUrl);
+  if (sourceUrl) {
+    if (invalidSourceUrl) sourceUrl.setAttribute('aria-invalid', 'true');
+    else sourceUrl.removeAttribute('aria-invalid');
+  }
   if (sourceUrlError) sourceUrlError.hidden = !invalidSourceUrl;
 }
 

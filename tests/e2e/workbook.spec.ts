@@ -51,10 +51,12 @@ test('keeps a malformed source URL out of the review-ready state', async ({ page
 
   await expect(page.locator('.sheet-state')).toContainText('Needs evidence');
   await expect(page.getByText(/cannot be marked ready until the link works/i)).toBeVisible();
+  await expect(page.getByLabel('Source URL or stable identifier')).toHaveAttribute('aria-invalid', 'true');
   expect(await page.getByLabel('Source URL or stable identifier').evaluate((input: HTMLInputElement) => input.validity.typeMismatch)).toBe(true);
 
   await page.getByLabel('Source URL or stable identifier').fill('https://example.edu/seneca');
   await expect(page.locator('.sheet-state')).toContainText('Ready to review');
+  await expect(page.getByLabel('Source URL or stable identifier')).not.toHaveAttribute('aria-invalid');
 });
 
 test('exports JSON and reports an invalid import', async ({ page }) => {
