@@ -1,0 +1,18 @@
+{
+  "date": "2026-08-28",
+  "url": "http://127.0.0.1:4173/",
+  "mode": "Lighthouse 13 mobile simulation",
+  "scores": {
+    "performance": 99,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "metrics": {
+    "firstContentfulPaint": "0.9 s",
+    "largestContentfulPaint": "1.7 s",
+    "totalBlockingTime": "100 ms",
+    "cumulativeLayoutShift": 0,
+    "speedIndex": "0.9 s"
+  }
+}

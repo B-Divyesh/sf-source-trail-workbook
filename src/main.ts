@@ -377,7 +377,9 @@ async function importFromFile(file: File): Promise<void> {
   let data: unknown;
   try { data = JSON.parse(await file.text()); }
   catch { throw new Error('That file is not valid JSON. Export it again and retry.'); }
-  workbook = parseWorkbook(data);
+  const imported = parseWorkbook(data);
+  if (workbook && !window.confirm(`Import “${imported.title}”? It will replace the workbook currently stored on this device.`)) return;
+  workbook = imported;
   record(`Imported ${workbook.trails.length} ${workbook.trails.length === 1 ? 'trail' : 'trails'}`);
   currentTrailId = workbook.trails[0]?.id ?? '';
   screen = 'workbook';
