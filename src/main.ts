@@ -82,10 +82,10 @@ function header(): string {
           <details class="export-menu">
             <summary class="button button-ink">Export</summary>
             <div class="export-panel">
-              <button data-action="export-json">Workbook JSON</button>
-              <button data-action="export-template">Blank template JSON</button>
-              <button data-action="export-csv">Trail table CSV</button>
-              <button data-action="export-citations">Citations text</button>
+              <button data-action="export-json" aria-label="Workbook JSON">Workbook JSON</button>
+              <button data-action="export-template" aria-label="Blank template JSON">Blank template JSON</button>
+              <button data-action="export-csv" aria-label="Trail table CSV">Trail table CSV</button>
+              <button data-action="export-citations" aria-label="Citations text">Citations text</button>
             </div>
           </details>
         </nav>` : ''}
