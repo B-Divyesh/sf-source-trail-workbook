@@ -1,8 +1,11 @@
 # Perfection loop polish 2 — finding closure
 
-**Base review:** `2a4d97b37582db43c6d8659ccaa2dacb35b064b0`  
-**Repair commit:** `439717b`  
-**Deployment:** `4b926fcf-f6bd-4fe2-a136-172550aae73a`  
+**Base review:** `2a4d97b37582db43c6d8659ccaa2dacb35b064b0`
+
+**Repair commit:** `439717b`
+
+**Deployment:** `4b926fcf-f6bd-4fe2-a136-172550aae73a`
+
 **Live product:** <https://source-trail-workbook.sociobot.in/>
 
 ## Finding map
