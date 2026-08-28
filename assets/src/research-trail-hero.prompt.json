@@ -1,0 +1,9 @@
+{
+  "generator": "/opt/fleet/lib/gen-image.sh",
+  "deployment": "factory-image",
+  "date": "2026-08-28",
+  "size": "1536x1024",
+  "quality": "high",
+  "prompt": "Use case: illustration-story. Asset type: offline research-workbook landing illustration. A tactile editorial still-life explaining an auditable research trail: five paper fragments form one clear zigzag path, progressing through a question note, abstract search-result fragments, an inspected source, a short quotation slip, and a final claim card. Warm recycled paper, carbon-black printer ink, blue pencil arrows, yellow highlighter, coral correction marks, torn deckled edges, subtle halftone grain, entirely handmade print-collage feeling. Landscape top-down composition, bold black outlines, generous warm-paper negative space, flat soft daylight, top-down 50mm editorial scan, minimal shadows. Palette: warm paper, carbon ink, library cobalt, highlighter yellow, correction coral. No people, no hands, no faces, no logos, no brands, no legible text, no letters, no watermark, no gradients, no glossy 3D, no laptop, no phone, no generic dashboard UI, no clutter.",
+  "review": "Selected: coherent five-stage trail, clean paper edges, palette-aligned, and no unintended brands or readable text."
+}

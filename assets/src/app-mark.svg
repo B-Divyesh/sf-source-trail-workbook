@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Source Trail Workbook mark</title>
+  <desc id="desc">Three offset paper slips connected by a blue research trail.</desc>
+  <rect width="512" height="512" rx="64" fill="#F2EEDF"/>
+  <path d="M82 92h230v220H82z" fill="#FFDA45" stroke="#141414" stroke-width="20"/>
+  <path d="M140 145h230v220H140z" fill="#FFFDF6" stroke="#141414" stroke-width="20"/>
+  <path d="M200 202h230v220H200z" fill="#E95C48" stroke="#141414" stroke-width="20"/>
+  <path d="M122 275l91-42 68 87 112-64" fill="none" stroke="#1745D1" stroke-linecap="square" stroke-linejoin="miter" stroke-width="24"/>
+  <path d="M366 230l38 20-23 37" fill="none" stroke="#1745D1" stroke-linecap="square" stroke-width="24"/>
+</svg>
