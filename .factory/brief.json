@@ -1,0 +1,30 @@
+{
+  "slug": "source-trail-workbook",
+  "title": "Source Trail Workbook",
+  "territory": "utilities",
+  "user": "A humanities instructor teaching undergraduates how to research digitally and needing a repeatable exercise that shows search decisions, source quality, and claims.",
+  "evidence": [
+    {
+      "url": "https://hn.algolia.com/api/v1/items/48422480",
+      "date": "2026-06-06",
+      "quote_or_summary": "An instructor asks how to teach digital research workflows to undergraduate philosophy students, explicitly seeking free/open tools and presentation guidance."
+    },
+    {
+      "url": "https://github.com/JabRef/jabref/issues/12364",
+      "date": "2025-01-06",
+      "quote_or_summary": "JabRef users request support for multiple journal-abbreviation lists, a concrete sign that citation/reference normalization is not one-size-fits-all."
+    }
+  ],
+  "recurrence": "A direct 2026 teaching request plus an independent reference-management customization request show that research workflow needs are both pedagogical and discipline-specific.",
+  "current_workaround": "Demonstrate browser searches live, ask students to submit a bibliography, and use Zotero/JabRef without capturing how sources or claims were selected.",
+  "incumbents_and_gap": "Zotero and JabRef manage citations, and library guides explain evaluation; neither is a small classroom worksheet that preserves a student's query, rejected result, claim, quote, and citation as one auditable trail.",
+  "smallest_useful_product": "Offline-first workbook with structured entries for question, query, source metadata, credibility notes, supporting/contradicting quote, and citation export; teachers can distribute a template JSON file. Non-goals: web scraping, AI research answers, or a reference manager replacement.",
+  "success_measure": "In one assignment, 80% of students submit at least three claim-to-source trails and an instructor can identify unsupported claims without opening a separate bibliography tool.",
+  "artifact_class": "pwa-offline",
+  "monetization": "free — open access is explicit in the teaching request, and local files reduce institutional adoption friction.",
+  "constraints": "Do not copy paywalled content; cite source URLs and user-entered short quotations only; support export formats without pretending citation formatting proves source quality.",
+  "est_build_effort": "S",
+  "why_distinct": "It teaches the reasoning trail behind research, not merely reference collection or AI-powered search.",
+  "confidence": 4,
+  "state": "RESEARCHED"
+}
