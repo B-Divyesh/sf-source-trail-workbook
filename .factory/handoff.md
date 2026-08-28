@@ -4,6 +4,8 @@ Work order: `source-trail-workbook-repair-1`
 Base independently verified: `758f8fc05559b02abb8d7f6ecc74ed1d4512e95e`
 Repair base: `500379f603d5b5fc5b7ebe3cef6a3683ac30aed8`
 Deployment: Azure Static Web Apps static artifact (`dist/`)
+Repair commits: `e759c15`, `3a3ee38`
+Final Azure deployment: `0f465acf-acde-4f5e-8223-13711ad10021`
 
 ## Repair completed
 
@@ -31,7 +33,8 @@ Deployment: Azure Static Web Apps static artifact (`dist/`)
   review-ready status, while an HTTPS DOI resolver can.
 - `tests/e2e/workbook.spec.ts` reproduces the verifier’s browser case: native
   URL `typeMismatch`, **Needs evidence**, accessible recovery text, then a
-  valid URL restoring **Ready to review**.
+  valid URL restoring **Ready to review**. It also asserts the dynamic
+  `aria-invalid="true"` state and its removal after repair.
 - `tests/deployment-policy.test.ts` locks the Azure immutable-asset,
   revalidated-service-worker, CSP, HSTS, and manifest media-type configuration.
 
@@ -59,9 +62,28 @@ npm audit --omit=dev           PASS — 0 known vulnerabilities
   Accessibility **100**, Best Practices **100**, SEO **100**; FCP 1.0 s, LCP
   1.7 s, TBT 0 ms, CLS 0. (The CLI emitted a tab-crash notice while closing,
   but wrote the complete scored JSON report.)
-- Production budget from the final build: JS 29.67 kB / 9.90 kB gzip, CSS
+- Production budget from the final build: JS 29.71 kB / 9.91 kB gzip, CSS
   16.49 kB / 4.28 kB gzip; mobile hero remains 62,180 B. No separate lint
   script exists; the build runs the repository TypeScript check.
+
+## Live deployment verification (2026-08-28)
+
+- The live page references final `assets/index-DpOqpYg7.js`. Desktop browser
+  verification reproduced the malformed URL case: native `typeMismatch` and
+  `aria-invalid="true"` alongside **Needs evidence**; replacing it with an
+  HTTPS DOI resolver produced **Ready to review**. There were zero console or
+  page errors and axe found zero serious/critical violations.
+- Keyboard check: the skip link is first focus and has a `4px solid` cobalt
+  focus outline. Desktop and 390 × 844 mobile both had no horizontal overflow.
+  Browser request origins were only `https://source-trail-workbook.sociobot.in`.
+- The deployed PWA controlled the page and successfully reloaded offline at
+  390 px with the workbook heading and “Offline mode” present.
+- Response policy is live: asset JS and WebP return
+  `public, max-age=31536000, immutable`; HTML and manifest return
+  `public, max-age=0, must-revalidate`; `sw.js` returns
+  `no-cache, no-store, must-revalidate`. The manifest is
+  `application/manifest+json`; CSP is enforcing; HSTS is
+  `max-age=31536000; includeSubDomains; preload`.
 
 ## Run and deploy
 
