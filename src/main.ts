@@ -488,13 +488,18 @@ async function leaveDemo(): Promise<void> {
 }
 
 async function resetDemo(): Promise<void> {
-  await clearWorkbook('demo');
+  if (saveTimer) window.clearTimeout(saveTimer);
   workbook = createSampleWorkbook();
   currentTrailId = workbook.trails[0].id;
-  await persistWorkbook(workbook, 'demo');
   render();
   announce('Demo reset to the original three sample trails.');
   document.querySelector<HTMLElement>('#trail-heading')?.focus();
+  try {
+    await clearWorkbook('demo');
+    await persistWorkbook(workbook, 'demo');
+  } catch {
+    announce('The sample reset, but this browser could not keep the reset for the next visit.', true);
+  }
 }
 
 function focusRouteHeading(message: string): void {
