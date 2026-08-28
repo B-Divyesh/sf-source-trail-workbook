@@ -1,4 +1,5 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, stat } from 'node:fs/promises';
+import { resolve } from 'node:path';
 import { expect, test } from '@playwright/test';
 
 async function clearStorage(page: import('@playwright/test').Page): Promise<void> {
@@ -33,10 +34,22 @@ test('@claim:free-use completes the core workflow without an account or payment 
   await pending;
   await expect(page.getByRole('link', { name: /sign in|subscribe|pay/i })).toHaveCount(0);
   expect(requests.every((url) => !/billing|checkout|login|oauth/i.test(url))).toBe(true);
+  const license = await readFile(resolve('LICENSE'), 'utf8');
+  expect(license).toContain('Permission is hereby granted, free of charge');
+  expect(license).toContain('without restriction');
 });
 
-test('@claim:demo-isolation resets sample data and keeps real work separate', async ({ page }) => {
+test('@claim:demo-isolation opens three sample trails, resets them, and preserves existing real work', async ({ page }) => {
   await expect(page.getByLabel('Workbook title')).toHaveValue('Coffeehouses and the public sphere');
+  await expect(page.getByRole('heading', { level: 2, name: '3 trails' })).toBeVisible();
+  await expect(page.locator('#ready-count')).toHaveText('3');
+
+  await page.getByRole('button', { name: 'Start for real' }).click();
+  await page.getByRole('button', { name: 'Create a blank workbook' }).click();
+  await page.getByLabel('Workbook title').fill('REAL WORKBOOK MUST SURVIVE');
+  await expect(page.locator('#save-state')).toContainText('Saved locally');
+  await page.getByRole('link', { name: 'Demo', exact: true }).click();
+
   await page.getByLabel('Workbook title').fill('Changed demo title');
   await page.getByRole('button', { name: 'Reset demo' }).click();
   await expect(page.getByLabel('Workbook title')).toHaveValue('Coffeehouses and the public sphere');
@@ -44,8 +57,8 @@ test('@claim:demo-isolation resets sample data and keeps real work separate', as
   await page.getByRole('button', { name: 'Start for real' }).click();
   await expect(page).toHaveURL('/');
   await expect(page.getByRole('heading', { level: 1, name: 'Trace research claims to their sources' })).toBeVisible();
-  await page.getByRole('button', { name: 'Create a blank workbook' }).click();
-  await expect(page.getByLabel('Workbook title')).toHaveValue('My research workbook');
+  await page.getByRole('button', { name: 'Continue your workbook' }).click();
+  await expect(page.getByLabel('Workbook title')).toHaveValue('REAL WORKBOOK MUST SURVIVE');
   const keys = await page.evaluate(async () => new Promise<IDBValidKey[]>((resolve, reject) => {
     const request = indexedDB.open('source-trail-workbook', 1);
     request.onsuccess = () => {
@@ -58,6 +71,29 @@ test('@claim:demo-isolation resets sample data and keeps real work separate', as
   }));
   expect(keys).toContain('workbook:current');
   expect(keys).not.toContain('demo:current');
+});
+
+test('@claim:core-workflow records a complete search-to-claim trail and marks it ready', async ({ page }) => {
+  await page.getByRole('button', { name: 'Start for real' }).click();
+  await page.getByRole('button', { name: 'Create a blank workbook' }).click();
+  await page.getByLabel('Research question').fill('How did pamphlets affect public debate?');
+  await page.getByLabel('Exact search query').fill('eighteenth century pamphlets public debate archive');
+  await page.getByLabel('Where did you search?').fill('University archive catalog');
+  await page.getByLabel('Why this wording?').fill('Added archive to find primary-source collections.');
+  await page.getByLabel('Result title or URL').fill('General history blog');
+  await page.getByLabel('Why did you pass it over?').fill('It did not name its sources.');
+  await page.getByLabel('Source title').fill('Pamphlets and Public Opinion');
+  await page.getByLabel('Source URL or stable identifier').fill('https://example.edu/archive/pamphlets');
+  await page.getByLabel('Who made it—and what qualifies them?').fill('A university archive with named curators.');
+  await page.getByLabel('What evidence, method, or editorial process supports it?').fill('The catalog describes dated pamphlets and their collection history.');
+  await page.getByLabel('What perspective, gap, or limitation matters?').fill('The surviving collection favors printed urban debate.');
+  await page.getByLabel('Your claim').fill('Pamphlets carried political arguments beyond formal institutions.');
+  await page.getByLabel('Short quotation or paraphrase').fill('The collection circulated arguments among urban readers.');
+  await page.getByLabel('Explain the connection').fill('The dated collection connects printed arguments with readers outside Parliament.');
+
+  await expect(page.locator('.sheet-state')).toContainText('Ready to review');
+  await expect(page.locator('#ready-count')).toHaveText('1');
+  await expect(page.getByLabel('Result title or URL')).toHaveValue('General history blog');
 });
 
 test('@claim:json-export downloads all sample trails as JSON', async ({ page }) => {
@@ -115,12 +151,49 @@ test('@claim:template-roundtrip exports and imports a response-free assignment',
   await expect(page.getByLabel('Your claim')).toHaveValue('');
 });
 
+test('@claim:json-import-replacement asks before replacing a saved workbook', async ({ page }) => {
+  await page.getByRole('button', { name: 'Start for real' }).click();
+  await page.getByRole('button', { name: 'Create a blank workbook' }).click();
+  await page.getByLabel('Workbook title').fill('Keep this workbook');
+  await expect(page.locator('#save-state')).toContainText('Saved locally');
+  await page.getByRole('button', { name: 'Close' }).click();
+
+  const imported = {
+    workbook: {
+      kind: 'source-trail-workbook', schemaVersion: 1, id: 'imported-workbook',
+      title: 'Confirmed import', studentName: '', course: '', researchQuestion: 'Imported question',
+      assignmentNotes: '', citationStyle: 'MLA', trails: [], history: [],
+      createdAt: '2026-08-28T00:00:00.000Z', updatedAt: '2026-08-28T00:00:00.000Z',
+    },
+  };
+  const file = { name: 'confirmed-import.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(imported)) };
+
+  page.once('dialog', async (dialog) => {
+    expect(dialog.message()).toContain('replace the workbook currently stored');
+    await dialog.dismiss();
+  });
+  await page.getByRole('button', { name: 'Import JSON' }).click();
+  await page.locator('#import-file').setInputFiles(file);
+  await page.getByRole('button', { name: 'Continue your workbook' }).click();
+  await expect(page.getByLabel('Workbook title')).toHaveValue('Keep this workbook');
+  await page.getByRole('button', { name: 'Close' }).click();
+
+  page.once('dialog', async (dialog) => {
+    expect(dialog.message()).toContain('replace the workbook currently stored');
+    await dialog.accept();
+  });
+  await page.getByRole('button', { name: 'Import JSON' }).click();
+  await page.locator('#import-file').setInputFiles(file);
+  await expect(page.getByLabel('Workbook title')).toHaveValue('Confirmed import');
+  await expect(page.getByLabel('Research question')).toHaveValue('Imported question');
+});
+
 test('@claim:offline-reload keeps the sample available offline after one visit', async ({ page, context }) => {
   await page.evaluate(() => navigator.serviceWorker.ready);
   await page.reload();
   await context.setOffline(true);
   await page.reload();
-  await expect(page.getByRole('heading', { level: 1, name: 'Review a completed research trail' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Review three completed research trails' })).toBeVisible();
   await expect(page.getByText(/Offline mode/i)).toBeVisible();
   await expect(page.getByLabel('Workbook title')).toHaveValue('Coffeehouses and the public sphere');
   await context.setOffline(false);
@@ -131,6 +204,25 @@ test('@claim:local-persistence restores a saved browser edit after reload', asyn
   await expect(page.locator('#save-state')).toContainText('Saved locally');
   await page.reload();
   await expect(page.getByLabel('Workbook title')).toHaveValue('My edited demo workbook');
+});
+
+test('@claim:storage-deletion removes saved work when browser site data is cleared', async ({ page }) => {
+  await page.getByRole('button', { name: 'Start for real' }).click();
+  await page.getByRole('button', { name: 'Create a blank workbook' }).click();
+  await page.getByLabel('Workbook title').fill('Delete with site data');
+  await expect(page.locator('#save-state')).toContainText('Saved locally');
+  await page.getByRole('button', { name: 'Close' }).click();
+  await page.evaluate(async () => {
+    await new Promise<void>((resolveDelete) => {
+      const request = indexedDB.deleteDatabase('source-trail-workbook');
+      request.onsuccess = () => resolveDelete();
+      request.onerror = () => resolveDelete();
+      request.onblocked = () => resolveDelete();
+    });
+  });
+  await page.reload();
+  await expect(page.getByRole('button', { name: 'Create a blank workbook' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Continue your workbook' })).toHaveCount(0);
 });
 
 test('@claim:privacy-local makes only same-origin requests and uploads no workbook text', async ({ page }) => {
@@ -165,4 +257,63 @@ test('@claim:status-evaluation updates readiness and explains an invalid source 
   await expect(page.locator('.sheet-state')).toContainText('Needs evidence');
   await expect(page.getByText(/cannot be marked ready until the link works/i)).toBeVisible();
   await expect(page.getByLabel('Source URL or stable identifier')).toHaveAttribute('aria-invalid', 'true');
+});
+
+test('@claim:install-action offers install only when the browser permits it', async ({ page }) => {
+  await page.getByRole('button', { name: 'Start for real' }).click();
+  await page.evaluate(() => {
+    (window as unknown as { installPromptCalls: number }).installPromptCalls = 0;
+    const event = new Event('beforeinstallprompt', { cancelable: true });
+    Object.defineProperties(event, {
+      prompt: { value: async () => { (window as unknown as { installPromptCalls: number }).installPromptCalls += 1; } },
+      userChoice: { value: Promise.resolve({ outcome: 'accepted' }) },
+    });
+    window.dispatchEvent(event);
+  });
+  const install = page.getByRole('button', { name: 'Install app' });
+  await expect(install).toBeVisible();
+  await install.click();
+  expect(await page.evaluate(() => (window as unknown as { installPromptCalls: number }).installPromptCalls)).toBe(1);
+  await expect(install).toBeHidden();
+});
+
+test('@claim:hero-provenance serves the documented original generated artwork', async ({ page }) => {
+  await page.getByRole('button', { name: 'Start for real' }).click();
+  const image = page.getByRole('img', { name: /Five torn paper notes connected by blue arrows/i });
+  await expect(image).toBeVisible();
+  const response = await page.request.get(await image.getAttribute('src') ?? '');
+  expect(response.ok()).toBe(true);
+  expect((await response.body()).byteLength).toBeGreaterThan(50_000);
+
+  const provenance = JSON.parse(await readFile(resolve('assets/src/research-trail-hero.prompt.json'), 'utf8'));
+  expect(provenance.deployment).toBe('factory-image');
+  expect(provenance.prompt).toContain('auditable research trail');
+  expect(provenance.review).toContain('Selected');
+  expect((await stat(resolve('assets/src/research-trail-hero.png'))).size).toBeGreaterThan(100_000);
+});
+
+test('@claim:deployment-policy defines long-lived assets, secure responses, and update checks', async () => {
+  const config = JSON.parse(await readFile(resolve('public/staticwebapp.config.json'), 'utf8'));
+  expect(config.routes.find((route: { route: string }) => route.route === '/assets/*').headers['cache-control'])
+    .toBe('public, max-age=31536000, immutable');
+  expect(config.routes.find((route: { route: string }) => route.route === '/sw.js').headers['cache-control'])
+    .toBe('no-cache, no-store, must-revalidate');
+  expect(config.globalHeaders['content-security-policy']).toContain("default-src 'self'");
+  expect(config.globalHeaders['strict-transport-security']).toContain('max-age=31536000');
+});
+
+test('@claim:designed-404 maps missing routes to the product not-found page', async ({ page }) => {
+  const config = JSON.parse(await readFile(resolve('public/staticwebapp.config.json'), 'utf8'));
+  expect(config.responseOverrides['404']).toEqual({ rewrite: '/404.html', statusCode: 404 });
+  await page.goto('/404.html');
+  await expect(page).toHaveTitle('Page not found — Source Trail Workbook');
+  await expect(page.getByRole('heading', { level: 1, name: 'This trail ends here' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Return to the workbook' })).toHaveAttribute('href', '/');
+});
+
+test('@claim:build-output emits a deployable dist site with an index document', async () => {
+  const index = await readFile(resolve('dist/index.html'), 'utf8');
+  expect(index).toContain('<!doctype html>');
+  expect(index).toMatch(/\/assets\/main-[A-Za-z0-9_-]+\.js/);
+  expect((await stat(resolve('dist/staticwebapp.config.json'))).size).toBeGreaterThan(100);
 });

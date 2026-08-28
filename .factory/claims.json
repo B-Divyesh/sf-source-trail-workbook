@@ -1,17 +1,24 @@
 [
   {
     "id": "free-use",
-    "claim": "The workbook is free to use",
-    "where": "landing facts, README",
+    "claim": "The workbook is free to use and its source is MIT-licensed",
+    "where": "landing facts, terms, README",
     "test": "npm run test:claims -- --grep @claim:free-use",
-    "sandbox": "fresh /?demo=1; create a real workbook, save an edit, and export without any account or payment step"
+    "sandbox": "fresh /?demo=1; create a real workbook, save an edit, export without any account or payment step, and assert the shipped MIT license"
   },
   {
     "id": "demo-isolation",
-    "claim": "The sample demo resets and never replaces a real workbook",
+    "claim": "The demo opens a sample workbook with three completed trails, resets, and never replaces a real workbook",
     "where": "landing demo action, demo banner, README",
     "test": "npm run test:claims -- --grep @claim:demo-isolation",
-    "sandbox": "fresh browser storage; enter /?demo=1, edit and reset sample, exit, then assert real workspace is blank and demo key is removed"
+    "sandbox": "fresh /?demo=1; assert three ready trails, create named real work, re-enter/edit/reset demo, exit, and assert the exact real workbook survives while demo:current is removed"
+  },
+  {
+    "id": "core-workflow",
+    "claim": "Records the search query, rejected result, checked source, credibility notes, claim, quotation, and evidence link in one review-ready trail",
+    "where": "landing headline and three steps, workbook, README",
+    "test": "npm run test:claims -- --grep @claim:core-workflow",
+    "sandbox": "fresh /?demo=1; enter real mode, complete every part of a trail, and assert the ready state and saved rejected result"
   },
   {
     "id": "json-export",
@@ -42,6 +49,13 @@
     "sandbox": "fresh /?demo=1; download template, import it into real mode, and assert question retained while student work is blank"
   },
   {
+    "id": "json-import-replacement",
+    "claim": "Importing valid workbook JSON asks before replacing the workbook saved in the browser",
+    "where": "landing import action, README",
+    "test": "npm run test:claims -- --grep @claim:json-import-replacement",
+    "sandbox": "fresh /?demo=1; create and save real work, reject an import and assert it survives, then accept and assert imported content replaces it"
+  },
+  {
     "id": "offline-reload",
     "claim": "Works offline after the first visit",
     "where": "landing facts, README",
@@ -54,6 +68,13 @@
     "where": "save status, privacy page, README",
     "test": "npm run test:claims -- --grep @claim:local-persistence",
     "sandbox": "fresh /?demo=1; edit sample, wait for saved status, reload, and assert the edit remains"
+  },
+  {
+    "id": "storage-deletion",
+    "claim": "Clearing the site's browser storage removes the saved workbook",
+    "where": "privacy page",
+    "test": "npm run test:claims -- --grep @claim:storage-deletion",
+    "sandbox": "fresh /?demo=1; create named real work, clear the product database as the browser site-data control does, reload, and assert no saved workbook remains"
   },
   {
     "id": "privacy-local",
@@ -75,5 +96,40 @@
     "where": "trail index, README",
     "test": "npm run test:claims -- --grep @claim:status-evaluation",
     "sandbox": "fresh /?demo=1; assert three ready trails, enter malformed URL, and assert Needs evidence plus an announced repair message"
+  },
+  {
+    "id": "install-action",
+    "claim": "Shows an Install app action only when the browser permits installation",
+    "where": "conditional landing action",
+    "test": "npm run test:claims -- --grep @claim:install-action",
+    "sandbox": "fresh /?demo=1; return to the landing page, dispatch the browser install event, invoke the visible action, and assert the prompt runs once then hides"
+  },
+  {
+    "id": "hero-provenance",
+    "claim": "The landing illustration is original art generated for Source Trail Workbook",
+    "where": "landing footer, design record",
+    "test": "npm run test:claims -- --grep @claim:hero-provenance",
+    "sandbox": "fresh /?demo=1; return home, fetch the served illustration, and assert the original source plus generator, prompt, date, and selection record"
+  },
+  {
+    "id": "deployment-policy",
+    "claim": "The included host settings cache versioned assets for one year, check app files for updates, block outside scripts, and require secure connections",
+    "where": "README deploy section",
+    "test": "npm run test:claims -- --grep @claim:deployment-policy",
+    "sandbox": "clean repository; assert the shipped host configuration has one-year immutable asset caching, service-worker revalidation, self-only script policy, and one-year secure transport"
+  },
+  {
+    "id": "designed-404",
+    "claim": "The included host settings send missing routes to a designed product 404 page",
+    "where": "README deploy section",
+    "test": "npm run test:claims -- --grep @claim:designed-404",
+    "sandbox": "fresh /?demo=1; inspect the shipped 404 response mapping, open the product 404 page, and assert its title, heading, and route home"
+  },
+  {
+    "id": "build-output",
+    "claim": "The production build emits a deployable site in dist with index.html at its root",
+    "where": "README run and deploy sections",
+    "test": "npm run test:claims -- --grep @claim:build-output",
+    "sandbox": "clean repository after the claim script's production build; assert dist/index.html references a built JavaScript asset and the host configuration is present"
   }
 ]

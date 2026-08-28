@@ -24,9 +24,9 @@ Students can export workbook JSON, a CSV trail table, or draft citations.
 Instructors can export a blank assignment template for students to import.
 No account is required, and workbook content is not uploaded.
 
-The sample demo uses a separate `demo:current` IndexedDB key.
+The demo uses separate browser storage from your real workbook.
 Reset restores its three humanities trails.
-Starting for real deletes the demo key and opens the separate real workspace.
+Starting for real clears the demo and opens your real workspace.
 
 ## Run locally
 
@@ -46,7 +46,7 @@ npm ci
 npm run build
 ```
 
-The deploy artifact is `dist/`, with `dist/index.html` at its root.
+The built site is in `dist/`, with `dist/index.html` at its root.
 
 ## Test
 
@@ -56,18 +56,13 @@ npm run test:e2e
 npm run test:claims
 ```
 
-The browser suite checks the full workflow, accessibility, mobile layout, privacy, downloads, routing, and offline reload.
-Playwright is pinned to 1.58.2.
-
-Every visitor-facing promise and its clean-state command are listed in [`.factory/claims.json`](.factory/claims.json).
-
 ## Keyboard and data ownership
 
 - `Ctrl`/`Cmd` + `S`: save now
 - `Ctrl`/`Cmd` + `Enter`: add a trail
 
 Export JSON before clearing site data or moving to another device.
-Importing a valid workbook replaces the locally stored workbook after confirmation.
+Importing a valid workbook asks before replacing the workbook saved in your browser.
 
 Citation exports are drafts.
 Check them against the course style guide because formatting does not establish source quality.
@@ -75,14 +70,14 @@ Check them against the course style guide because formatting does not establish 
 ## Deploy
 
 Deploy `dist/` to Azure Static Web Apps.
-The response policy gives hashed assets a one-year immutable cache.
-HTML, the manifest, and the service worker revalidate so updates can appear.
+The included host settings keep versioned asset files for one year.
+HTML and offline-app files check for updates instead of using that long-lived cache.
 
-The policy also sets a self-only CSP, one-year HSTS, and the manifest media type.
-It serves the designed `404.html` for missing routes.
+The security settings block outside scripts and require secure connections.
+They also send missing routes to the designed `404.html` page.
 
 The researched scope is in [`.factory/brief.json`](.factory/brief.json).
-The visual system and original-image provenance are in [`.factory/design.md`](.factory/design.md).
+The visual-system document records how the original image was made.
 
 ## License
 

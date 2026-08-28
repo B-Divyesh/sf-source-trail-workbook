@@ -17,7 +17,7 @@ let pendingInstall: BeforeInstallPromptEvent | null = null;
 let allowUpdateReload = false;
 let storageMode: StorageMode = isDemoLocation() ? 'demo' : 'real';
 
-const BUILD_ID = 'v1.1.0 · polish 1';
+const BUILD_ID = 'v1.2.0 · polish 2';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -96,7 +96,7 @@ function footer(): string {
   return `<footer class="site-footer">
     <p>Record how a search supports a research claim.</p>
     <nav aria-label="Legal"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav>
-    <p><a href="https://sociobot.in" rel="external">Built by Param Factory <span class="visually-hidden">(external site)</span></a> · ${BUILD_ID}</p>
+    <p><a href="https://sociobot.in" rel="external">Built by Param Factory (external site)</a> · ${BUILD_ID}</p>
     <p class="image-note">Original hero art generated for Source Trail Workbook.</p>
   </footer>`;
 }
@@ -110,7 +110,7 @@ function startView(): string {
         <h1 id="hero-heading" tabindex="-1">Trace research claims to their sources</h1>
         <p class="lede">For students and instructors who need to show how a search became a claim.</p>
         <div class="hero-actions">
-          <div class="demo-action"><a class="button button-primary" href="/?demo=1" data-route="demo">Try it with sample data <span aria-hidden="true">→</span></a><small>Opens a completed class research trail.</small></div>
+          <div class="demo-action"><a class="button button-primary" href="/?demo=1" data-route="demo">Try it with sample data <span aria-hidden="true">→</span></a><small>Opens a sample workbook with three completed research trails.</small></div>
           ${hasWorkbook ? '<button class="button button-secondary" data-action="continue-workbook">Continue your workbook</button>' : '<button class="button button-secondary" data-action="new-workbook">Create a blank workbook</button>'}
           ${hasWorkbook ? '<button class="button button-quiet" data-action="new-workbook">Create a new workbook</button>' : ''}
           <button class="button button-secondary" data-action="import">Import JSON</button>
@@ -273,7 +273,7 @@ function workbookView(): string {
   const history = workbook.history.slice(-3).reverse();
   return `${header()}
     <main id="main-content" class="workspace ${storageMode === 'demo' ? 'is-demo' : ''}" tabindex="-1">
-      <h1 class="workspace-heading" tabindex="-1">${storageMode === 'demo' ? 'Review a completed research trail' : 'Build your source trail'}</h1>
+      <h1 class="workspace-heading" tabindex="-1">${storageMode === 'demo' ? 'Review three completed research trails' : 'Build your source trail'}</h1>
       <aside class="workbook-rail" aria-label="Workbook setup and trail index">
         <div class="rail-top">
           <p class="eyebrow">Workbook setup</p>

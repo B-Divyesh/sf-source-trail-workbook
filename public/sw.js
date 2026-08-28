@@ -1,5 +1,5 @@
-const SHELL = 'source-trail-shell-v4';
-const ASSETS = 'source-trail-assets-v4';
+const SHELL = 'source-trail-shell-v5';
+const ASSETS = 'source-trail-assets-v5';
 const CORE = [
   '/',
   '/index.html',
