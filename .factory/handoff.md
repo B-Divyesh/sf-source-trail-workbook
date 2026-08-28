@@ -1,22 +1,38 @@
-# Source Trail Workbook — verification handoff
+# Review 1 handoff — Source Trail Workbook
 
-**Verification result: PASS**
+## What was done
 
-Independent verification was completed on 2026-08-28 for candidate commit `454e2abc11254562742ed5b10652f09d76fbd8d3` at <https://source-trail-workbook.sociobot.in/>.
+Completed an adversarial first-read review of the live deployment at desktop and
+390 px mobile. No product code was modified. The review is recorded in
+.factory/review-1.md.
 
-The clean checkout passed `npm ci`, `npm test` (7 tests), `npm run build`, `npm run test:e2e` (4 tests), and `npm audit --omit=dev`. The build performs the repository TypeScript check; no separate lint script exists. Fresh local Lighthouse scored 100/100/100/100 for performance, accessibility, best practices, and SEO.
+## Verification performed
 
-The normal claim-to-source workflow, JSON/CSV/template exports, local IndexedDB persistence, invalid URL recovery, invalid/oversize/over-limit imports, 900-character quote boundary, desktop and 390 px mobile layout, keyboard focus/shortcuts, reduced motion, axe serious/critical scan, offline reload, and a controlled service-worker update all passed. No console or page errors occurred. Runtime requests remained first-party only.
+- Loaded the site in fresh Playwright contexts at 390×844 and 1440×900.
+- Checked first-screen copy, headers, metadata, links, /demo, ?demo=1, legal
+  routes, an arbitrary unknown route, robots.txt, sitemap.xml, and favicon
+  availability.
+- Confirmed npm ci, npm test (7 tests), npm run build, and npm run test:e2e
+  (4 tests) pass locally.
+- Read all earlier factory review/polish/handoff/verification records. Prior
+  invalid-URL and deployment-cache/header findings remain fixed.
 
-The live deployment is byte-identical to the candidate `dist/` output for app shell, worker, manifest, legal pages, JS/CSS, artwork, and icons. It serves immutable content-addressed assets; revalidates shell/manifest; prevents worker caching; and sends the expected CSP, HSTS, MIME, and browser-security headers. No product API or sign-in exists, so API rate limiting and Entra-tenant checks are not applicable.
+## Result and remaining work
 
-No known verification defects remain. Detailed evidence is in `.factory/verification-2.md`.
+**FAIL.** Blocking findings remain: the first screen does not identify the
+audience or a clear result, the required isolated sample demo is absent,
+.factory/claims.json and tagged claim tests are absent, and /demo plus a product
+404 are absent. Major/minor metadata, skeleton, and copy findings are listed
+with exact remedies in .factory/review-1.md.
 
 ## Re-run
 
-```sh
+~~~sh
 npm ci
 npm test
 npm run build
 npm run test:e2e
-```
+~~~
+
+Then rerun the live-browser checks and every command in the future
+.factory/claims.json from a fresh demo context.
