@@ -2,7 +2,7 @@
 
 ## Outcome
 
-All six findings in `.factory/review-1.md` are implemented and covered by automated tests.
+All six findings in `.factory/review-1.md` are implemented, deployed, and covered by automated tests.
 The earlier invalid-locator, immutable-cache, and response-header repairs remain covered by regression tests.
 
 The product remains a static offline PWA with the original seminar-handout visual system.
@@ -24,7 +24,7 @@ The product remains a static offline PWA with the original seminar-handout visua
 
 ## Local verification
 
-Clean clone: `/tmp/source-trail-polish-lc69BH`, commit `ed98361`.
+Clean clone: `/tmp/source-trail-polish-final`, created from final `main` after the evidence commit.
 
 ```text
 npm ci                         PASS — 60 packages, 0 vulnerabilities
@@ -35,8 +35,8 @@ npm audit --omit=dev           PASS — 0 vulnerabilities
 11 individual claim commands   PASS — each manifest command run separately
 ```
 
-The production artifact measured 39.34 KB JavaScript, 17.84 KB CSS, and 62.18 KB for the mobile hero image.
-JavaScript is 13.01 KB gzip and CSS is 4.55 KB gzip.
+The production artifact measured 39.47 KB JavaScript, 17.84 KB CSS, and 62.18 KB for the mobile hero image.
+JavaScript is 13.05 KB gzip and CSS is 4.55 KB gzip.
 
 Local Lighthouse 12.8.2: Performance 100, Accessibility 100, Best Practices 100, SEO 100.
 FCP was 1.0 s, LCP 1.7 s, TBT 10 ms, and CLS 0.
@@ -44,11 +44,40 @@ FCP was 1.0 s, LCP 1.7 s, TBT 10 ms, and CLS 0.
 The worker URL verifier passed root and demo with zero console errors, one `h1`, one `main`, `lang=en`, complete image alt text, and zero unlabeled buttons.
 Playwright axe found zero serious or critical issues across root, demo, privacy, terms, and 404 at 390×844.
 
+## Deployment and live verification
+
+Deployed source commit: `e20b253`.
+Final Azure deployment id: `005128a5-bdf4-4faf-b2f2-b789a166c9dc`.
+Live URL: <https://source-trail-workbook.sociobot.in/>.
+
+Cold live checks in a new Chromium context passed:
+
+- root, `/?demo=1`, `/demo/`, `/privacy/`, and `/terms/` returned 200;
+- the unknown route returned 404 with the designed “This trail ends here” page;
+- first-screen headline, audience, sample action, title, and metadata matched the reviewed copy;
+- demo showed three ready trails, used only `demo:current`, reset immediately, and removed that key on exit;
+- live JSON export contained all three sample trails;
+- back navigation and legal navigation focused the destination `h1`;
+- 390 px root and demo had no horizontal overflow;
+- service-worker-controlled live demo reloaded offline with all sample data;
+- all 25 observed runtime requests were same-origin and contained no workbook text;
+- root and demo logged zero console or page errors;
+- the only 404 console message was Chromium’s expected report for the intentionally missing top-level resource.
+
+Live response headers include the enforcing self-only CSP, one-year HSTS, `nosniff`, and restrictive permissions policy.
+The final hashed JavaScript returns `cache-control: public, max-age=31536000, immutable`.
+
+Live Lighthouse 12.8.2: Performance 100, Accessibility 100, Best Practices 100, SEO 100.
+FCP was 0.9 s, LCP 1.3 s, TBT 0 ms, and CLS 0.
+
 Evidence:
 
 - `.factory/evidence/polish-1-local-root/verify.json`
 - `.factory/evidence/polish-1-local-demo/verify.json`
 - `.factory/evidence/polish-1-lighthouse.json`
+- `.factory/evidence/polish-1-live-root/verify.json`
+- `.factory/evidence/polish-1-live-demo/verify.json`
+- `.factory/evidence/polish-1-live-lighthouse.json`
 - `.factory/evidence/polish-1-landing-mobile.png`
 - `.factory/evidence/polish-1-demo-mobile.png`
 - `.factory/evidence/polish-1-demo-desktop.png`
