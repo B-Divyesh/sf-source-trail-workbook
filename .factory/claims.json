@@ -1,0 +1,79 @@
+[
+  {
+    "id": "free-use",
+    "claim": "The workbook is free to use",
+    "where": "landing facts, README",
+    "test": "npm run test:claims -- --grep @claim:free-use",
+    "sandbox": "fresh /?demo=1; create a real workbook, save an edit, and export without any account or payment step"
+  },
+  {
+    "id": "demo-isolation",
+    "claim": "The sample demo resets and never replaces a real workbook",
+    "where": "landing demo action, demo banner, README",
+    "test": "npm run test:claims -- --grep @claim:demo-isolation",
+    "sandbox": "fresh browser storage; enter /?demo=1, edit and reset sample, exit, then assert real workspace is blank and demo key is removed"
+  },
+  {
+    "id": "json-export",
+    "claim": "Exports the complete workbook as JSON",
+    "where": "workbook export menu, README",
+    "test": "npm run test:claims -- --grep @claim:json-export",
+    "sandbox": "fresh /?demo=1; download and parse JSON; assert three complete trails"
+  },
+  {
+    "id": "csv-export",
+    "claim": "Exports every trail as a CSV table",
+    "where": "workbook export menu, README",
+    "test": "npm run test:claims -- --grep @claim:csv-export",
+    "sandbox": "fresh /?demo=1; download CSV; assert header and one row per sample trail"
+  },
+  {
+    "id": "citation-export",
+    "claim": "Exports draft citations as text",
+    "where": "workbook export menu, README",
+    "test": "npm run test:claims -- --grep @claim:citation-export",
+    "sandbox": "fresh /?demo=1; download citations; assert style warning and all three sample sources"
+  },
+  {
+    "id": "template-roundtrip",
+    "claim": "Exports a blank assignment template that can be imported",
+    "where": "instructor section, workbook export menu, README",
+    "test": "npm run test:claims -- --grep @claim:template-roundtrip",
+    "sandbox": "fresh /?demo=1; download template, import it into real mode, and assert question retained while student work is blank"
+  },
+  {
+    "id": "offline-reload",
+    "claim": "Works offline after the first visit",
+    "where": "landing facts, README",
+    "test": "npm run test:claims -- --grep @claim:offline-reload",
+    "sandbox": "fresh /?demo=1; gain service-worker control, set context offline, reload, and assert sample and offline state remain"
+  },
+  {
+    "id": "local-persistence",
+    "claim": "Workbook edits persist in browser storage",
+    "where": "save status, privacy page, README",
+    "test": "npm run test:claims -- --grep @claim:local-persistence",
+    "sandbox": "fresh /?demo=1; edit sample, wait for saved status, reload, and assert the edit remains"
+  },
+  {
+    "id": "privacy-local",
+    "claim": "Workbook content is not uploaded, and the app sends no analytics or third-party runtime requests",
+    "where": "landing facts, privacy page, README",
+    "test": "npm run test:claims -- --grep @claim:privacy-local",
+    "sandbox": "fresh /?demo=1 with request capture; edit and export; assert every request and script is same-origin, no analytics path appears, and no request body contains workbook text"
+  },
+  {
+    "id": "keyboard-workflow",
+    "claim": "Keyboard shortcuts save the workbook and add a trail",
+    "where": "workbook shortcut note, README",
+    "test": "npm run test:claims -- --grep @claim:keyboard-workflow",
+    "sandbox": "fresh /?demo=1; press Control+S and Control+Enter; assert save feedback and a fourth trail"
+  },
+  {
+    "id": "status-evaluation",
+    "claim": "Trail status identifies complete evidence and rejects malformed source URLs",
+    "where": "trail index, README",
+    "test": "npm run test:claims -- --grep @claim:status-evaluation",
+    "sandbox": "fresh /?demo=1; assert three ready trails, enter malformed URL, and assert Needs evidence plus an announced repair message"
+  }
+]

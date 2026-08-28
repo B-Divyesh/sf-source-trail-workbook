@@ -6,6 +6,7 @@ type StaticWebAppConfig = {
   globalHeaders: Record<string, string>;
   routes: Array<{ route: string; headers: Record<string, string> }>;
   mimeTypes: Record<string, string>;
+  responseOverrides: Record<string, { rewrite: string; statusCode: number }>;
 };
 
 const configPath = resolve(import.meta.dirname, '../public/staticwebapp.config.json');
@@ -30,5 +31,6 @@ describe('Azure Static Web Apps response policy', () => {
     expect(config.globalHeaders['content-security-policy']).toContain("default-src 'self'");
     expect(config.globalHeaders['strict-transport-security']).toContain('max-age=31536000');
     expect(config.mimeTypes['.webmanifest']).toBe('application/manifest+json');
+    expect(config.responseOverrides['404']).toEqual({ rewrite: '/404.html', statusCode: 404 });
   });
 });

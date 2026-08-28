@@ -1,15 +1,19 @@
-const SHELL = 'source-trail-shell-v3';
-const ASSETS = 'source-trail-assets-v3';
+const SHELL = 'source-trail-shell-v4';
+const ASSETS = 'source-trail-assets-v4';
 const CORE = [
   '/',
   '/index.html',
+  '/demo/',
   '/offline.html',
+  '/404.html',
   '/privacy/',
   '/terms/',
   '/legal.css',
   '/manifest.webmanifest',
   '/icon-192.png',
   '/icon-512.png',
+  '/apple-touch-icon.png',
+  '/favicon.svg',
   '/assets/research-trail-hero-960-5049c562.webp'
 ];
 

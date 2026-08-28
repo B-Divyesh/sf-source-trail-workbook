@@ -112,3 +112,7 @@ watermarks, gradients, glossy 3D, laptop, phone, generic dashboard UI, clutter.
 Generation: Azure factory image generator (`factory-image` deployment via
 `/opt/fleet/lib/gen-image.sh`), 2026-08-28. Generated work is original to this
 product; selected source and exact prompt are stored in `assets/src/`.
+
+The 1200×630 social preview in `public/og-source-trail.jpg` is a centered crop
+of that same original hero asset. The SVG favicon is hand-authored from the
+three-paper trail mark; the 180 px touch icon is resized from the same mark.
