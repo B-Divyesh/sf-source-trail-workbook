@@ -1,5 +1,5 @@
-const SHELL = 'source-trail-shell-v2';
-const ASSETS = 'source-trail-assets-v2';
+const SHELL = 'source-trail-shell-v3';
+const ASSETS = 'source-trail-assets-v3';
 const CORE = [
   '/',
   '/index.html',
@@ -10,7 +10,7 @@ const CORE = [
   '/manifest.webmanifest',
   '/icon-192.png',
   '/icon-512.png',
-  '/assets/research-trail-hero-960.webp'
+  '/assets/research-trail-hero-960-5049c562.webp'
 ];
 
 self.addEventListener('install', (event) => {

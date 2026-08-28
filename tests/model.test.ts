@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { citationsText, formatCitation, workbookCsv } from '../src/citations';
-import { createTrail, createWorkbook, isUnsupported, makeTemplate, parseWorkbook, trailStatus } from '../src/model';
+import { createTrail, createWorkbook, isAuditableSourceUrl, isUnsupported, makeTemplate, parseWorkbook, trailStatus } from '../src/model';
 
 describe('trail readiness', () => {
   it('distinguishes an empty, unsupported, and review-ready trail', () => {
@@ -21,6 +21,26 @@ describe('trail readiness', () => {
     });
     expect(trailStatus(trail)).toBe('ready');
     expect(isUnsupported(trail)).toBe(false);
+  });
+
+  it('never marks a malformed source URL ready for review', () => {
+    const trail = createTrail();
+    Object.assign(trail, {
+      query: 'Seneca grief consolation primary source',
+      sourceTitle: 'Moral Letters to Lucilius',
+      sourceUrl: 'not-a-valid-url',
+      claim: 'Seneca frames grief as a social duty.',
+      quote: 'A short quotation.',
+      explanation: 'The quoted imperative supplies the basis for the claim.',
+      credibilityCreator: 'A university classics collection.',
+    });
+
+    expect(isAuditableSourceUrl(trail.sourceUrl)).toBe(false);
+    expect(trailStatus(trail)).toBe('needs-evidence');
+
+    trail.sourceUrl = 'https://doi.org/10.1000/example';
+    expect(isAuditableSourceUrl(trail.sourceUrl)).toBe(true);
+    expect(trailStatus(trail)).toBe('ready');
   });
 });
 

@@ -67,10 +67,12 @@ source quality and should be checked against the course style guide.
 
 ## Deploy
 
-Serve `dist/` as a static site with HTTPS and SPA fallback to `index.html` for
-unknown application routes. `/privacy/` and `/terms/` are emitted as standalone
-pages. Do not cache `sw.js` immutably; hashed files under `assets/` may be cached
-long-term.
+Deploy `dist/` to Azure Static Web Apps. The built
+`staticwebapp.config.json` sets the production response policy: content-addressed
+files under `assets/` are cached for one year with `immutable`; HTML, the
+manifest, and `sw.js` revalidate so updates can be discovered. It also enforces
+a self-only CSP, one-year HSTS, and the manifest JSON media type. `/privacy/`
+and `/terms/` are emitted as standalone pages.
 
 The researched scope is recorded in [`.factory/brief.json`](.factory/brief.json)
 and the product-specific visual system and generated-image provenance are in

@@ -39,6 +39,24 @@ test('builds a complete auditable trail and keeps it after reload', async ({ pag
   expect(accessibility.violations.filter((item) => ['serious', 'critical'].includes(item.impact ?? ''))).toEqual([]);
 });
 
+test('keeps a malformed source URL out of the review-ready state', async ({ page }) => {
+  await page.getByRole('button', { name: /start a workbook/i }).click();
+  await page.getByLabel('Exact search query').fill('Seneca grief consolation primary source');
+  await page.getByLabel('Source title').fill('Moral Letters to Lucilius');
+  await page.getByLabel('Source URL or stable identifier').fill('not-a-valid-url');
+  await page.getByLabel('Who made it—and what qualifies them?').fill('A university classics collection with named editors.');
+  await page.getByLabel('Your claim').fill('Seneca frames grief as a practice shaped by social duty.');
+  await page.getByLabel('Short quotation or paraphrase').fill('A short excerpt about mourning and duty.');
+  await page.getByLabel('Explain the connection').fill('The passage treats mourning as conduct that can be evaluated, which supports the claim.');
+
+  await expect(page.locator('.sheet-state')).toContainText('Needs evidence');
+  await expect(page.getByText(/cannot be marked ready until the link works/i)).toBeVisible();
+  expect(await page.getByLabel('Source URL or stable identifier').evaluate((input: HTMLInputElement) => input.validity.typeMismatch)).toBe(true);
+
+  await page.getByLabel('Source URL or stable identifier').fill('https://example.edu/seneca');
+  await expect(page.locator('.sheet-state')).toContainText('Ready to review');
+});
+
 test('exports JSON and reports an invalid import', async ({ page }) => {
   await page.getByRole('button', { name: /start a workbook/i }).click();
   await page.getByLabel('Workbook title').fill('Export test');

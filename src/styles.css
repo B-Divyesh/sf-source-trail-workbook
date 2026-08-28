@@ -242,6 +242,8 @@ input::placeholder, textarea::placeholder { color: #77736a; opacity: 1; }
 .status > span { width: 9px; height: 9px; border: 1px solid var(--ink); background: var(--paper); }
 .status-needs-evidence > span { background: var(--marker); }
 .status-ready > span { background: var(--success); }
+.field-error { margin: 8px 0 0; color: var(--danger); font-size: 14px; font-weight: 700; line-height: 1.4; }
+.field input[aria-invalid="true"] { border-color: var(--danger); box-shadow: inset 4px 0 0 var(--danger); }
 .activity { padding-top: 20px; border-top: 2px solid var(--ink); }
 .activity h2 { margin: 0 0 10px; font-size: 14px; text-transform: uppercase; }
 .activity ul { margin: 0; padding: 0; list-style: none; }

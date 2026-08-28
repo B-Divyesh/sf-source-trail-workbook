@@ -51,12 +51,24 @@ export function createWorkbook(): Workbook {
   };
 }
 
+/** A review-ready trail needs a link an instructor can actually follow. */
+export function isAuditableSourceUrl(value: string): boolean {
+  const sourceUrl = value.trim();
+  if (!sourceUrl) return false;
+  try {
+    const url = new URL(sourceUrl);
+    return (url.protocol === 'https:' || url.protocol === 'http:') && Boolean(url.hostname);
+  } catch {
+    return false;
+  }
+}
+
 export function trailStatus(trail: Trail): TrailStatus {
   const hasAny = [trail.query, trail.sourceTitle, trail.claim, trail.quote].some((value) => value.trim());
   if (!hasAny) return 'started';
-  const core = [trail.query, trail.sourceTitle, trail.sourceUrl, trail.claim, trail.quote, trail.explanation];
+  const core = [trail.query, trail.sourceTitle, trail.claim, trail.quote, trail.explanation];
   const credibility = [trail.credibilityCreator, trail.credibilityEvidence, trail.credibilityLimits].some((value) => value.trim());
-  return core.every((value) => value.trim()) && credibility ? 'ready' : 'needs-evidence';
+  return core.every((value) => value.trim()) && isAuditableSourceUrl(trail.sourceUrl) && credibility ? 'ready' : 'needs-evidence';
 }
 
 export function isUnsupported(trail: Trail): boolean {

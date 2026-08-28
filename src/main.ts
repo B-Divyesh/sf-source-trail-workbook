@@ -1,7 +1,7 @@
 import './styles.css';
 import { citationsText, workbookCsv } from './citations';
 import { loadWorkbook, saveWorkbook as persistWorkbook } from './db';
-import { createTrail, createWorkbook, isUnsupported, makeTemplate, now, parseWorkbook, trailName, trailStatus } from './model';
+import { createTrail, createWorkbook, isAuditableSourceUrl, isUnsupported, makeTemplate, now, parseWorkbook, trailName, trailStatus } from './model';
 import type { Trail, TrailStatus, Workbook } from './types';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
@@ -83,8 +83,8 @@ function startView(): string {
       </section>
       <figure class="hero-figure">
         <picture>
-          <source media="(max-width: 700px)" srcset="/assets/research-trail-hero-960.webp" />
-          <img src="/assets/research-trail-hero-1536.webp" srcset="/assets/research-trail-hero-960.webp 960w, /assets/research-trail-hero-1536.webp 1536w" sizes="(max-width: 800px) 94vw, 48vw" width="1536" height="1024" alt="Five torn paper notes connected by blue arrows, moving from a question through search results and a source to a quotation and final claim." fetchpriority="high" decoding="async" />
+          <source media="(max-width: 700px)" srcset="/assets/research-trail-hero-960-5049c562.webp" />
+          <img src="/assets/research-trail-hero-1536-ac10ff86.webp" srcset="/assets/research-trail-hero-960-5049c562.webp 960w, /assets/research-trail-hero-1536-ac10ff86.webp 1536w" sizes="(max-width: 800px) 94vw, 48vw" width="1536" height="1024" alt="Five torn paper notes connected by blue arrows, moving from a question through search results and a source to a quotation and final claim." fetchpriority="high" decoding="async" />
         </picture>
         <figcaption>One visible path from question to defensible claim.</figcaption>
       </figure>
@@ -132,12 +132,15 @@ function trailList(): string {
     </li>`).join('')}</ol>`;
 }
 
-function field(id: string, label: string, value: string, options: { type?: string; hint?: string; placeholder?: string; required?: boolean; trail?: boolean } = {}): string {
+function field(id: string, label: string, value: string, options: { type?: string; hint?: string; placeholder?: string; required?: boolean; trail?: boolean; error?: string; invalid?: boolean } = {}): string {
   const hintId = options.hint ? `${id}-hint` : '';
+  const errorId = options.error ? `${id}-error` : '';
+  const describedBy = [hintId, errorId].filter(Boolean).join(' ');
   return `<div class="field">
     <label for="${id}">${label}${options.required ? ' <span class="required">Required for review</span>' : ''}</label>
     ${options.hint ? `<p class="field-hint" id="${hintId}">${options.hint}</p>` : ''}
-    <input id="${id}" type="${options.type ?? 'text'}" value="${escapeHtml(value)}" ${options.placeholder ? `placeholder="${escapeHtml(options.placeholder)}"` : ''} ${hintId ? `aria-describedby="${hintId}"` : ''} ${options.trail ? `data-trail-field="${id.replace('trail-', '')}"` : `data-workbook-field="${id.replace('workbook-', '')}"`} />
+    <input id="${id}" type="${options.type ?? 'text'}" value="${escapeHtml(value)}" ${options.placeholder ? `placeholder="${escapeHtml(options.placeholder)}"` : ''} ${describedBy ? `aria-describedby="${describedBy}"` : ''} ${options.invalid ? 'aria-invalid="true"' : ''} ${options.trail ? `data-trail-field="${id.replace('trail-', '')}"` : `data-workbook-field="${id.replace('workbook-', '')}"`} />
+    ${options.error ? `<p class="field-error" id="${errorId}" role="status" ${options.invalid ? '' : 'hidden'}>${escapeHtml(options.error)}</p>` : ''}
   </div>`;
 }
 
@@ -157,6 +160,7 @@ function select(id: string, label: string, value: string, values: Array<[string,
 
 function trailEditor(trail: Trail, index: number): string {
   const unsupported = isUnsupported(trail);
+  const invalidSourceUrl = Boolean(trail.sourceUrl.trim()) && !isAuditableSourceUrl(trail.sourceUrl);
   return `<article class="trail-sheet" aria-labelledby="trail-heading">
     <div class="sheet-heading">
       <div><p class="eyebrow">Trail ${String(index + 1).padStart(2, '0')}</p><h2 id="trail-heading">${escapeHtml(trailName(trail, index))}</h2></div>
@@ -193,7 +197,7 @@ function trailEditor(trail: Trail, index: number): string {
             ${field('trail-sourceDate', 'Publication date', trail.sourceDate, { placeholder: 'YYYY, full date, or n.d.', trail: true })}
             ${field('trail-sourceType', 'Source type', trail.sourceType, { placeholder: 'Book, article, archive…', trail: true })}
           </div>
-          ${field('trail-sourceUrl', 'Source URL or stable identifier', trail.sourceUrl, { type: 'url', required: true, trail: true, hint: 'Link to the source record; do not paste paywalled content.' })}
+          ${field('trail-sourceUrl', 'Source URL or stable identifier', trail.sourceUrl, { type: 'url', required: true, trail: true, hint: 'Use a complete https:// link or persistent record URL; do not paste paywalled content.', error: 'Enter a complete URL, such as https://library.example.edu/source. This trail cannot be marked ready until the link works.', invalid: invalidSourceUrl })}
         </div>
       </section>
 
@@ -339,6 +343,11 @@ function refreshDerived(): void {
   if (heading) heading.textContent = trailName(trail, index);
   const state = document.querySelector('.sheet-state .status');
   if (state) state.outerHTML = statusBadge(trail);
+  const sourceUrl = document.querySelector<HTMLInputElement>('#trail-sourceUrl');
+  const sourceUrlError = document.querySelector<HTMLElement>('#trail-sourceUrl-error');
+  const invalidSourceUrl = Boolean(trail.sourceUrl.trim()) && !isAuditableSourceUrl(trail.sourceUrl);
+  if (sourceUrl) sourceUrl.toggleAttribute('aria-invalid', invalidSourceUrl);
+  if (sourceUrlError) sourceUrlError.hidden = !invalidSourceUrl;
 }
 
 function filename(suffix: string): string {

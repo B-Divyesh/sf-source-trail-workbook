@@ -3,7 +3,7 @@
   "short_name": "Source Trail",
   "description": "An offline-first workbook for tracing claims to research decisions and sources.",
   "id": "/?source=pwa",
-  "start_url": "/?v=1",
+  "start_url": "/?v=2",
   "scope": "/",
   "display": "standalone",
   "background_color": "#F2EEDF",
